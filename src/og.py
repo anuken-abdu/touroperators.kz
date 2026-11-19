@@ -8,11 +8,13 @@ from playwright.sync_api import sync_playwright
 A = Path(__file__).resolve().parent.parent / "assets"
 f = lambda n: (A / "fonts" / n).as_uri()
 H = f"""<html><head><style>
-@font-face{{font-family:I;src:url({f('inter-cyrillic-wght-normal.woff2')});font-weight:100 900}}
+@font-face{{font-family:I;src:url({f('inter-cyrillic-wght-normal.woff2')});font-weight:100 900;unicode-range:U+0400-045F}}
+@font-face{{font-family:I;src:url({f('inter-cyrillic-ext-wght-normal.woff2')});font-weight:100 900;unicode-range:U+0460-052F}}
+@font-face{{font-family:I;src:url({f('inter-latin-wght-normal.woff2')});font-weight:100 900;unicode-range:U+0000-00FF,U+2000-206F}}
 body{{margin:0;width:1200px;height:630px;background:#010066;color:#fff;font-family:I;position:relative;overflow:hidden}}
 img{{position:absolute;left:80px;top:70px;height:78px}}
-h1{{position:absolute;left:80px;top:200px;margin:0;font-size:68px;line-height:1.08;font-weight:800;letter-spacing:-2px;width:1000px}}
-p{{position:absolute;left:80px;bottom:72px;margin:0;font-size:28px;font-weight:600;padding-top:20px;border-top:3px solid #e8a317;width:1040px}}
+h1{{position:absolute;left:80px;top:196px;margin:0;font-size:76px;line-height:1.08;font-weight:800;letter-spacing:-2px;width:1000px}}
+p{{position:absolute;left:80px;bottom:72px;margin:0;font-size:32px;font-weight:600;padding-top:22px;border-top:3px solid #e8a317;width:1040px}}
 </style></head><body><img src="{(A / 'logo.webp').as_uri()}"><h1>{NAME}</h1><p>Основана в {FOUNDED} году. Член НПП РК «Атамекен»</p></body></html>"""
 with sync_playwright() as pw:
     b = pw.chromium.launch(); pg = b.new_page(viewport={"width": 1200, "height": 630})
