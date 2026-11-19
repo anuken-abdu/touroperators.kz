@@ -40,11 +40,20 @@ HAS_CONTACTS = any([PHONE_DISPLAY, EMAIL, ADDRESS, WHATSAPP])
 NAV = [("Об ассоциации", "#ob-assotsiatsii"), ("Члены", "#chleny"), ("Система гарантирования", "#sistema-garantirovaniya"), ("Планы", "#plany"), ("Вопросы", "#voprosy")] + \
       ([("Контакты", "#kontakty")] if HAS_CONTACTS else [])
 
+def webp_size(path):
+    """Размер WebP без сторонних библиотек: на Vercel при сборке есть только чистый Python."""
+    b = Path(path).read_bytes()[:40]
+    kind = b[12:16]
+    if kind == b"VP8X": return 1 + int.from_bytes(b[24:27], "little"), 1 + int.from_bytes(b[27:30], "little")
+    if kind == b"VP8 ": return int.from_bytes(b[26:28], "little") & 0x3FFF, int.from_bytes(b[28:30], "little") & 0x3FFF
+    if kind == b"VP8L":
+        v = int.from_bytes(b[21:25], "little"); return (v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1
+    raise ValueError(f"не WebP: {path}")
+
 def logo_tile(slug, name):
     f = IMG / f"m-{slug}.webp"
     if f.exists():
-        from PIL import Image
-        w, h = Image.open(f).size
+        w, h = webp_size(f)
         return f'<li class="lg"><img src="/assets/img/m-{slug}.webp" alt="{E(name)}" width="{w}" height="{h}" loading="lazy" decoding="async"></li>'
     return f'<li class="lg lg-t"><b>{E(name)}</b></li>'
 
