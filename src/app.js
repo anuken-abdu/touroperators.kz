@@ -26,4 +26,20 @@
   if (backBtn) backBtn.addEventListener("click", function () {
     if (backY !== null) { var y = backY; backY = null; window.scrollTo({ top: y, behavior: "smooth" }); onScroll(); }
   });
+  /* 3D-наклон за курсором: data-tilt. Логотипы увеличиваются сильнее, остальные блоки — мягко */
+  var fine = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (fine && !calm) {
+    $$("[data-tilt]").forEach(function (el) {
+      var logo = el.classList.contains("lg-in"), max = logo ? 12 : 6, sc = logo ? 1.08 : 1.025, raf = 0;
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () {
+          el.style.transform = "perspective(900px) rotateX(" + (-y * max).toFixed(2) + "deg) rotateY(" + (x * max).toFixed(2) + "deg) scale(" + sc + ")";
+        });
+      });
+      el.addEventListener("pointerleave", function () { cancelAnimationFrame(raf); el.style.transform = ""; });
+    });
+  }
 })();

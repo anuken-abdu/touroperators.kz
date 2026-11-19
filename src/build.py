@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from data import *
 
 ROOT = Path(__file__).resolve().parent.parent; DIST = ROOT / "dist"; IMG = ROOT / "assets" / "img"
-VER = "1911261"
+VER = "1911262"
 E = html.escape
 YEAR = date.today().year
 
@@ -50,19 +50,25 @@ def webp_size(path):
         v = int.from_bytes(b[21:25], "little"); return (v & 0x3FFF) + 1, ((v >> 14) & 0x3FFF) + 1
     raise ValueError(f"не WebP: {path}")
 
-def logo_tile(slug, name):
+def logo_tile(slug, name, url=""):
+    """Плитка логотипа: со ссылкой на сайт компании (если он есть) и объёмным наклоном при наведении."""
     f = IMG / f"m-{slug}.webp"
     if f.exists():
         w, h = webp_size(f)
-        return f'<li class="lg"><img src="/assets/img/m-{slug}.webp" alt="{E(name)}" width="{w}" height="{h}" loading="lazy" decoding="async"></li>'
-    return f'<li class="lg lg-t"><b>{E(name)}</b></li>'
+        inner = f'<img src="/assets/img/m-{slug}.webp" alt="{E(name)}" width="{w}" height="{h}" loading="lazy" decoding="async">'
+    else:
+        inner = f'<b>{E(name)}</b>'
+    cls = "lg-in" + ("" if f.exists() else " lg-t")
+    if url:
+        return f'<li class="lg"><a class="{cls}" href="{E(url)}" target="_blank" rel="noopener" data-tilt aria-label="{E(name)}, сайт компании">{inner}</a></li>'
+    return f'<li class="lg"><div class="{cls}" data-tilt>{inner}</div></li>'
 
 def org_ld():
     o = {"@context": "https://schema.org", "@type": "Organization", "@id": SITE_URL + "/#org", "name": NAME, "alternateName": SHORT,
          "url": SITE_URL + "/", "logo": SITE_URL + "/assets/icon-512.png", "image": SITE_URL + "/assets/og.png", "foundingDate": FOUNDED,
          "description": ABOUT, "areaServed": {"@type": "Country", "name": "Казахстан"}, "knowsLanguage": ["ru", "kk"],
          "employee": {"@type": "Person", "name": PRESIDENT[0], "jobTitle": PRESIDENT[1]},
-         "member": [{"@type": "Organization", "name": n} for _, n in MEMBERS],
+         "member": [dict({"@type": "Organization", "name": n}, **({"url": u} if u else {})) for _, n, u in MEMBERS],
          "memberOf": {"@type": "Organization", "name": "Национальная палата предпринимателей Республики Казахстан «Атамекен»", "url": "https://atameken.kz/"}}
     if PHONE_TEL: o["telephone"] = PHONE_TEL
     if EMAIL: o["email"] = EMAIL
@@ -115,10 +121,10 @@ def build():
                 if pres.exists() else '<span class="noph"></span>')
     tq = (f'<img class="tq" src="/assets/img/turistik-qamqor.webp" alt="Туристік Қамқор" width="369" height="220" loading="lazy" decoding="async">'
           if (IMG / "turistik-qamqor.webp").exists() else "")
-    tasks = "".join(f"<li><h3>{E(h)}</h3><p>{E(t)}</p></li>" for h, t in TASKS)
-    atam = "".join(f"<li><h3>{E(h)}</h3><p>{E(t)}</p></li>" for h, t in ATAMEKEN)
-    dirs = "".join(f"<li><h3>{E(h)}</h3><p>{E(t)}</p></li>" for h, t in g["directions"])
-    figs = "".join(f"<li><b>{n}</b><span>{t}</span></li>" for n, t in g["figures"] + [g["helped"]])
+    tasks = "".join(f"<li data-tilt><h3>{E(h)}</h3><p>{E(t)}</p></li>" for h, t in TASKS)
+    atam = "".join(f"<li data-tilt><h3>{E(h)}</h3><p>{E(t)}</p></li>" for h, t in ATAMEKEN)
+    dirs = "".join(f"<li data-tilt><h3>{E(h)}</h3><p>{E(t)}</p></li>" for h, t in g["directions"])
+    figs = "".join(f"<li data-tilt><b>{n}</b><span>{t}</span></li>" for n, t in g["figures"] + [g["helped"]])
     plans = "".join(f"<li>{E(p)}</li>" for p in PLANS)
     faq = "".join(f"<details><summary>{E(q)}</summary><p>{E(a)}</p></details>" for q, a in FAQ)
     contacts = ""
@@ -141,7 +147,7 @@ def build():
 </ul></div></section>
 
 <section class="s" id="ob-assotsiatsii"><div class="w about">
-<figure class="pr">{pres_img}<figcaption><b>{PRESIDENT[0]}</b><span>{PRESIDENT[1]}</span></figcaption></figure>
+<figure class="pr" data-tilt>{pres_img}<figcaption><b>{PRESIDENT[0]}</b><span>{PRESIDENT[1]}</span></figcaption></figure>
 <div><div class="sh"><h2>Об ассоциации</h2><p>{ABOUT} В состав входят 8 членов и 2 партнёра.</p></div>
 <h3 class="sub">Задачи и направления деятельности</h3><ul class="cells c3">{tasks}</ul></div>
 </div></section>
@@ -150,12 +156,12 @@ def build():
 <ul class="cells c2">{atam}</ul></div></section>
 
 <section class="s" id="chleny"><div class="w"><div class="sh"><h2>Члены ассоциации</h2><p>Восемь туроператоров, на которых приходится около 80% доли рынка.</p></div>
-<ul class="lgs c4">{"".join(logo_tile(s, n) for s, n in MEMBERS)}</ul>
+<ul class="lgs c4">{"".join(logo_tile(*m) for m in MEMBERS)}</ul>
 <div class="sh sh2"><h3>Партнёры</h3><p>Вместе с членами ассоциации — около 90% доли рынка.</p></div>
-<ul class="lgs c2">{"".join(logo_tile(s, n) for s, n in PARTNERS)}</ul></div></section>
+<ul class="lgs c2">{"".join(logo_tile(*m) for m in PARTNERS)}</ul></div></section>
 
 <section class="s dark" id="sistema-garantirovaniya"><div class="w">
-<div class="gt-h"><div class="sh"><p class="ey">Проект ассоциации</p><h2>{g["title"]}</h2><p>Администратор системы — «{g["admin"]}».</p></div>{f'<div class="tq-w">{tq}</div>' if tq else ""}</div>
+<div class="gt-h"><div class="sh"><p class="ey">Проект ассоциации</p><h2>{g["title"]}</h2><p>Администратор системы — «{g["admin"]}».</p></div>{f'<div class="tq-w" data-tilt>{tq}</div>' if tq else ""}</div>
 <ul class="cells c4">{dirs}</ul>
 <ul class="figs">{figs}</ul></div></section>
 
@@ -186,8 +192,8 @@ def meta():
 > {ABOUT} Основана в {FOUNDED} году. Президент — {PRESIDENT[0]}.
 
 ## Состав
-- Члены (8, около 80% доли рынка): {", ".join(n for _, n in MEMBERS)}
-- Партнёры (2, вместе с членами около 90% доли рынка): {", ".join(n for _, n in PARTNERS)}
+- Члены (8, около 80% доли рынка): {", ".join(n for _, n, _u in MEMBERS)}
+- Партнёры (2, вместе с членами около 90% доли рынка): {", ".join(n for _, n, _u in PARTNERS)}
 
 ## Задачи
 """ + "\n".join(f"- {t}" for _, t in TASKS) + f"""

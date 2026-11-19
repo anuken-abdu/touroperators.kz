@@ -35,17 +35,17 @@ ATAMEKEN = [
 ]
 
 # Члены ассоциации. Логотип: orig/members/<slug>.png (обработка — python3 src/images.py)
-MEMBERS = [
-    ("fun-sun", "FUN&SUN"),
-    ("kompas", "KOMPAS Touroperator"),
-    ("selfie-travel", "Selfie Travel"),
-    ("kazunion", "Kazunion"),
-    ("pegas-touristik", "PEGAS Touristik"),
-    ("sayat", "Туроператор САЯТ"),
-    ("gelios-travel", "Gelios Travel"),
-    ("zhanar-travel", "Zhanar Travel"),
+MEMBERS = [   # (slug, название, сайт — пусто, если сайта нет)
+    ("fun-sun", "FUN&SUN", "https://www.fstravel.asia/"),
+    ("kompas", "KOMPAS Touroperator", "https://kompastour.com/kz/rus/"),
+    ("selfie-travel", "Selfie Travel", "https://www.selfietravel.kz/"),
+    ("kazunion", "Kazunion", "https://kazunion.com/"),
+    ("pegas-touristik", "PEGAS Touristik", "https://kz.pegast.asia/"),
+    ("sayat", "Туроператор САЯТ", ""),
+    ("gelios-travel", "Gelios Travel", ""),
+    ("zhanar-travel", "Zhanar Travel", ""),
 ]
-PARTNERS = [("anex-tour", "Anex Tour Kazakhstan"), ("sanat", "Компания SANAT")]
+PARTNERS = [("anex-tour", "Anex Tour Kazakhstan", "https://www.anextour.kz/"), ("sanat", "Компания SANAT", "https://sanat.kz/")]
 
 GUARANTEE = dict(
     title="Система гарантирования прав граждан Республики Казахстан в сфере выездного туризма",

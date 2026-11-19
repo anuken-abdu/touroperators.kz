@@ -66,7 +66,7 @@ ul{margin:0;padding:0;list-style:none}
 .sh2 h3{font-size:clamp(24px,2.4vw,32px);letter-spacing:-.02em}
 .sub{font-size:13.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:0 0 18px}
 .split{display:grid;gap:8px 72px}
-@media (min-width:1000px){.split{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}.split>.sh{position:sticky;top:calc(var(--hd) + 32px);align-self:start}}
+@media (min-width:1000px){.split{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}}
 
 /* ячейки с линией сверху — задачи, комитеты, направления */
 .cells{display:grid;gap:0 36px;grid-template-columns:1fr}
@@ -80,7 +80,7 @@ ul{margin:0;padding:0;list-style:none}
 
 /* об ассоциации + президент */
 .about{display:grid;gap:48px 72px;align-items:start}
-@media (min-width:1000px){.about{grid-template-columns:300px minmax(0,1fr)}.pr{position:sticky;top:calc(var(--hd) + 32px)}}
+@media (min-width:1000px){.about{grid-template-columns:300px minmax(0,1fr)}}
 .pr{margin:0;display:grid;gap:16px;max-width:300px}
 .pr img,.pr .noph{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:var(--r);background:var(--alt);display:block}
 .pr figcaption{display:grid;gap:2px}
@@ -89,8 +89,9 @@ ul{margin:0;padding:0;list-style:none}
 /* логотипы: одинаковые плитки, логотип вписан по центру */
 .lgs{display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (min-width:900px){.lgs.c4{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.lg{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;padding:clamp(18px,2.2vw,32px);background:#fff;border:1px solid var(--line);border-radius:var(--r)}
-.lg img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.lg{display:block;perspective:900px}
+.lg-in{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:16/9;padding:clamp(18px,2.2vw,32px);border-radius:var(--r);background:#fff;text-decoration:none}
+.lg-in img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
 .lg-t b{font-size:clamp(18px,1.8vw,24px);font-weight:800;color:var(--navy);text-align:center;letter-spacing:-.01em;line-height:1.2}
 @media (min-width:900px){.lgs.c2{max-width:calc(50% - 8px);grid-template-columns:repeat(2,minmax(0,1fr))}}
 
@@ -146,3 +147,13 @@ ul{margin:0;padding:0;list-style:none}
 @media (max-width:599px){:root{--hd:64px}body{font-size:16.5px}h1,h2{line-height:1.15}.logo img{height:42px}.faq details p{padding-right:0}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 @media (max-width:999px){.about>div{order:-1}.pr{max-width:260px}}
+
+/* объём при наведении: наклон за курсором и мягкое увеличение (только мышь, без «уменьшения движения») */
+[data-tilt]{transform-style:preserve-3d;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease;will-change:transform}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  .lg-in[data-tilt]:hover{box-shadow:0 26px 50px -24px rgba(1,0,102,.35)}
+  .cells li[data-tilt]:hover,.figs li[data-tilt]:hover{box-shadow:0 22px 44px -30px rgba(1,0,102,.4)}
+  .dark .cells li[data-tilt]:hover,.dark .figs li[data-tilt]:hover{box-shadow:0 22px 44px -26px rgba(0,0,0,.6)}
+  .pr[data-tilt]:hover img,.tq-w[data-tilt]:hover{box-shadow:0 30px 60px -30px rgba(1,0,102,.45)}
+}
+.cells li,.figs li{border-radius:2px}
